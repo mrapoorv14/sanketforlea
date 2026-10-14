@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="launching-soon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 /* ═══ Tokens — Sanket house identity, deepened for the dark canvas ═══════════════ */
 :root{
@@ -22,11 +22,11 @@
   --cream:#f5f0e4; --paper:#fffdf7; --ink:#132a4a;
   --steel:#7fa6d9; --muted:#5b6b7f;
   --on-dark:#d5deea; --on-dark-dim:#9fb3cc; --on-dark-faint:#7589a1;
-  --glass:rgba(245,240,228,.045);
+  --glass:rgba(13,31,56,.62);
   --glass-line:rgba(198,161,91,.22);
   --glass-line-lit:rgba(198,161,91,.5);
   --serif:'Newsreader','Iowan Old Style',Georgia,'Times New Roman',serif;
-  --sans:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:96px; --s7:136px;
   --r-sm:10px; --r-md:16px; --r-lg:24px; --r-xl:32px;
@@ -37,9 +37,16 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
 body{
-  margin:0; font-family:var(--sans); font-size:16px; line-height:1.6;
-  color:var(--on-dark); background:var(--navy-3); overflow-x:hidden;
+  margin:0; font-family:var(--sans); font-size:16px; line-height:1.6; letter-spacing:-.003em;
+  color:var(--on-dark); overflow-x:hidden; background:var(--navy-3);
 }
+/* fixed base wash — the signal field is painted over this, sections only tint it */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:linear-gradient(175deg,#102844 0%,#0a1728 42%,#06101d 100%);
+}
+h1,h2{text-wrap:balance}
+h1,h2,h3{font-optical-sizing:auto}
 h1,h2,h3{font-family:var(--serif); font-weight:400; letter-spacing:-.015em; color:#fff9eb; margin:0}
 a{color:inherit}
 img,svg,canvas{max-width:100%; display:block}
@@ -88,7 +95,7 @@ img,svg,canvas{max-width:100%; display:block}
 .nav a:hover::after{transform:scaleX(1)}
 .pill{
   display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:0 16px; border-radius:999px;
-  border:1px solid var(--glass-line); background:var(--glass); backdrop-filter:blur(8px);
+  border:1px solid var(--glass-line); background:rgba(198,161,91,.1);
   font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.18em; text-transform:uppercase;
   color:var(--gold-lit); white-space:nowrap;
 }
@@ -115,7 +122,7 @@ img,svg,canvas{max-width:100%; display:block}
   transform:skewX(-18deg); transition:left .7s var(--ease-out);
 }
 .btn-gold:hover::after{left:130%}
-.btn-ghost{border-color:var(--glass-line-lit); color:#fff9eb; background:rgba(245,240,228,.05); backdrop-filter:blur(6px)}
+.btn-ghost{border-color:var(--glass-line-lit); color:#fff9eb; background:rgba(245,240,228,.07)}
 .btn-ghost:hover{background:rgba(245,240,228,.11); border-color:var(--gold-lit)}
 .btn-quiet{min-height:44px; padding:0 16px; font-size:13.5px; color:var(--gold-lit);
   border-color:var(--glass-line); background:transparent}
@@ -148,13 +155,23 @@ img,svg,canvas{max-width:100%; display:block}
   mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 25%,transparent 78%);
   -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 25%,transparent 78%);
 }
-#net{position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; opacity:.8}
+#net{position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none; opacity:.9}
+#spot{
+  position:fixed; top:0; left:0; width:520px; height:520px; margin:-260px 0 0 -260px;
+  z-index:-1; pointer-events:none; opacity:0; transition:opacity .8s var(--ease); will-change:transform;
+  background:radial-gradient(circle closest-side, rgba(198,161,91,.15), transparent 70%);
+}
+#spot.on{opacity:1}
+#grain{
+  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
 .vignette{position:absolute; inset:0; z-index:1; pointer-events:none;
   background:radial-gradient(ellipse 80% 70% at 50% 45%,transparent 40%,rgba(6,16,29,.75) 100%)}
 
 /* ═══ Hero ═══════════════════════════════════════════════════════════════════════ */
 .hero{position:relative; min-height:100svh; display:flex; align-items:center; overflow:hidden;
-  padding:112px 0 72px; background:linear-gradient(170deg,var(--navy-2) 0%,var(--navy) 55%,var(--navy-3) 100%)}
+  padding:112px 0 72px}
 .hero-grid{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:var(--s5); align-items:center}
 .hero h1{margin:20px 0 24px; font-size:clamp(42px,6.2vw,82px); line-height:1.02; font-weight:300; letter-spacing:-.03em}
 .hero h1 span{display:block; overflow:hidden}
@@ -188,8 +205,10 @@ img,svg,canvas{max-width:100%; display:block}
 
 /* ═══ Sections ═══════════════════════════════════════════════════════════════════ */
 section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
-.band{background:linear-gradient(180deg,var(--navy-3),var(--navy-2) 50%,var(--navy-3))}
-.band-deep{background:var(--navy-3)}
+.band{background:radial-gradient(1100px 620px at 50% 0%, rgba(26,55,99,.34), transparent 72%)}
+.band-deep{background:radial-gradient(900px 560px at 50% 100%, rgba(13,31,56,.42), transparent 74%)}
+.band::after,.band-deep::after{content:''; position:absolute; inset:auto 0 0 0; height:1px; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(198,161,91,.3),transparent)}
 .sec-head{max-width:72ch; margin-bottom:var(--s5)}
 .sec-head h2{margin:18px 0 18px; font-size:clamp(32px,4.4vw,54px); line-height:1.08; font-weight:300; letter-spacing:-.025em}
 .sec-head h2 em{font-style:normal; color:var(--gold-lit)}
@@ -201,7 +220,6 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 /* glass surface */
 .glass{
   position:relative; background:var(--glass); border:1px solid var(--glass-line); border-radius:var(--r-lg);
-  backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2);
   overflow:hidden; transition:transform .4s var(--ease-out), border-color .4s var(--ease), box-shadow .4s var(--ease);
 }
 .glass::before{  /* top lensing highlight */
@@ -209,6 +227,11 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   background:linear-gradient(90deg,transparent,rgba(255,249,235,.45),transparent);
 }
 .glass:hover{transform:translateY(-5px); border-color:var(--glass-line-lit); box-shadow:var(--shadow)}
+.card::after,.safe-item::after,.step::after{
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .45s var(--ease);
+  background:radial-gradient(420px circle at var(--cx,50%) var(--cy,50%), rgba(231,200,136,.13), transparent 62%);
+}
+.card:hover::after,.safe-item:hover::after,.step:hover::after{opacity:1}
 
 /* ═══ Chapter 1 — the problem ════════════════════════════════════════════════════ */
 .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2); margin-top:var(--s5)}
@@ -441,6 +464,9 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   .step{grid-template-columns:1fr}
   .grid-bg{background-size:48px 48px}
 }
+@media (hover:none){
+  #spot{display:none}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important;
@@ -449,7 +475,8 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   .rv-mask > span{clip-path:none}
   .bars i,.sheet .bar i{transform:scaleY(1) scaleX(1)}
   .par{transform:none !important}
-  #net{display:none}
+  #net,#spot{display:none}
+  .card::after,.safe-item::after,.step::after{display:none}
 }
 @media print{.site-head,.progress,.scroll-cue,#net,.aurora{display:none}body{background:#fff; color:#000}}
 </style>
@@ -457,6 +484,9 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 <body>
 
 <div class="progress" id="prog" aria-hidden="true"></div>
+<canvas id="net" aria-hidden="true"></canvas>
+<div id="spot" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
 
 <!-- icon sprite -->
 <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
@@ -559,7 +589,6 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 <section class="hero">
   <div class="aurora par" data-speed="0.12" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="grid-bg par" data-speed="0.05" aria-hidden="true"></div>
-  <canvas id="net" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
 
   <div class="wrap">
@@ -1151,81 +1180,162 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   addEventListener('resize', onScroll, { passive: true });
   onScroll();
 
-  /* ── hero signal network ──────────────────────────────────────────────────── */
-  (function network() {
-    var cv = $('#net');
-    if (!cv || reduce) { if (cv) cv.style.display = 'none'; return; }
-    var ctx = cv.getContext('2d'), nodes = [], w = 0, h = 0, dpr = Math.min(devicePixelRatio || 1, 2);
-    var raf = null, visible = true;
+  /* -- the signal field: one fixed canvas under the whole page ------------- */
+  (function field() {
+    var cv = $('#net'), spot = $('#spot');
+    if (!cv || reduce) { if (cv) cv.style.display = 'none'; if (spot) spot.style.display = 'none'; return; }
+    var ctx = cv.getContext('2d'), dpr = Math.min(devicePixelRatio || 1, 1.5);
+    var nodes = [], pings = [], w = 0, h = 0, raf = null, running = true;
+    var pt = { x: -9999, y: -9999, on: false };     // pointer, in viewport coords
+    var LINK2 = 23000;                              // node-to-node link distance, squared
+    var PULL2 = 48400;                              // cursor influence radius (220px), squared
 
+    function spawn() {
+      return {
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - .5) * .2, vy: (Math.random() - .5) * .2,
+        r: Math.random() * 1.4 + .9,
+        lit: Math.random() < .16,
+        ph: Math.random() * Math.PI * 2,
+        flash: 0
+      };
+    }
     function size() {
-      var r = cv.parentElement.getBoundingClientRect();
-      w = r.width; h = r.height;
+      w = innerWidth; h = innerHeight;
       cv.width = w * dpr; cv.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var count = Math.round(Math.min(62, Math.max(22, w / 26)));
-      nodes = [];
-      for (var i = 0; i < count; i++) {
-        nodes.push({
-          x: Math.random() * w, y: Math.random() * h,
-          vx: (Math.random() - .5) * .22, vy: (Math.random() - .5) * .22,
-          r: Math.random() * 1.5 + .9,
-          lit: Math.random() < .18,            // a few "detected" nodes
-          ph: Math.random() * Math.PI * 2
-        });
-      }
+      var want = Math.round(Math.min(58, Math.max(22, (w * h) / 32000)));
+      while (nodes.length > want) nodes.pop();
+      while (nodes.length < want) nodes.push(spawn());
     }
 
     function frame(t) {
       ctx.clearRect(0, 0, w, h);
+
       for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i];
         n.x += n.vx; n.y += n.vy;
         if (n.x < 0 || n.x > w) n.vx *= -1;
         if (n.y < 0 || n.y > h) n.vy *= -1;
+
+        // a slow lean toward the cursor, never a lunge
+        if (pt.on) {
+          var px = pt.x - n.x, py = pt.y - n.y, pd2 = px * px + py * py;
+          if (pd2 < PULL2 && pd2 > 400) {
+            var k = (1 - pd2 / PULL2) * .00055;
+            n.vx += px * k; n.vy += py * k;
+            var sp = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+            if (sp > .62) { n.vx = n.vx / sp * .62; n.vy = n.vy / sp * .62; }
+          }
+        }
+        if (n.flash > 0) n.flash -= .018;
+
         for (var j = i + 1; j < nodes.length; j++) {
           var m = nodes[j], dx = n.x - m.x, dy = n.y - m.y, d2 = dx * dx + dy * dy;
-          if (d2 < 24000) {
-            var a = (1 - d2 / 24000) * .3;
-            ctx.strokeStyle = 'rgba(127,166,217,' + a.toFixed(3) + ')';
+          if (d2 < LINK2) {
+            ctx.strokeStyle = 'rgba(127,166,217,' + ((1 - d2 / LINK2) * .26).toFixed(3) + ')';
             ctx.lineWidth = .7;
             ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
           }
         }
+
+        // and a gold thread to the cursor itself
+        if (pt.on) {
+          var qx = pt.x - n.x, qy = pt.y - n.y, q2 = qx * qx + qy * qy;
+          if (q2 < PULL2) {
+            ctx.strokeStyle = 'rgba(198,161,91,' + ((1 - q2 / PULL2) * .42).toFixed(3) + ')';
+            ctx.lineWidth = .85;
+            ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+          }
+        }
       }
-      for (var k = 0; k < nodes.length; k++) {
-        var p = nodes[k];
-        var pulse = p.lit ? (Math.sin(t / 900 + p.ph) * .5 + .5) : 0;
+
+      // click pings: a ring that travels out and lights whatever it passes
+      for (var g = pings.length - 1; g >= 0; g--) {
+        var pg = pings[g], age = (t - pg.t) / 1000, rad = age * 330;
+        if (age > 2.1) { pings.splice(g, 1); continue; }
+        var fade = Math.max(0, 1 - age / 2.1);
+        ctx.beginPath(); ctx.arc(pg.x, pg.y, rad, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(231,200,136,' + (fade * .5).toFixed(3) + ')';
+        ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.beginPath(); ctx.arc(pg.x, pg.y, rad * .62, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(127,166,217,' + (fade * .22).toFixed(3) + ')';
+        ctx.lineWidth = .9; ctx.stroke();
+        for (var z = 0; z < nodes.length; z++) {
+          var nd = nodes[z], ddx = nd.x - pg.x, ddy = nd.y - pg.y;
+          if (Math.abs(Math.sqrt(ddx * ddx + ddy * ddy) - rad) < 26) nd.flash = Math.max(nd.flash, fade);
+        }
+      }
+
+      for (var c = 0; c < nodes.length; c++) {
+        var o = nodes[c];
+        var pulse = o.lit ? (Math.sin(t / 950 + o.ph) * .5 + .5) : 0;
+        var hot = Math.max(pulse, o.flash);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r + pulse * 1.4, 0, Math.PI * 2);
-        ctx.fillStyle = p.lit
-          ? 'rgba(231,200,136,' + (.45 + pulse * .5).toFixed(3) + ')'
-          : 'rgba(159,179,204,.42)';
+        ctx.arc(o.x, o.y, o.r + hot * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = (o.lit || o.flash > .02)
+          ? 'rgba(231,200,136,' + (.4 + hot * .55).toFixed(3) + ')'
+          : 'rgba(159,179,204,.38)';
         ctx.fill();
-        if (p.lit) {
+        if (hot > .02) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 6 + pulse * 7, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(198,161,91,' + (.22 - pulse * .16).toFixed(3) + ')';
+          ctx.arc(o.x, o.y, 6 + hot * 8, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(198,161,91,' + (hot * .2).toFixed(3) + ')';
           ctx.lineWidth = 1; ctx.stroke();
         }
       }
+
       raf = requestAnimationFrame(frame);
     }
 
-    function start() { if (!raf && visible) raf = requestAnimationFrame(frame); }
+    function start() { if (!raf && running) raf = requestAnimationFrame(frame); }
     function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
     size(); start();
-    addEventListener('resize', function () { size(); }, { passive: true });
+    addEventListener('resize', size, { passive: true });
     document.addEventListener('visibilitychange', function () {
-      visible = !document.hidden; visible ? start() : stop();
+      running = !document.hidden;
+      if (running) { start(); } else { stop(); }
     });
-    if ('IntersectionObserver' in window) {        // stop burning frames once scrolled past
-      new IntersectionObserver(function (es) {
-        visible = es[0].isIntersecting && !document.hidden;
-        visible ? start() : stop();
-      }, { threshold: 0 }).observe(cv.parentElement);
+
+    // pointer: the field leans toward it, a soft light follows it
+    var mx = 0, my = 0, queued = false;
+    function moved(x, y) {
+      pt.x = x; pt.y = y; pt.on = true; mx = x; my = y;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        spot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)';
+        spot.classList.add('on');
+        queued = false;
+      });
     }
+    addEventListener('pointermove', function (e) { moved(e.clientX, e.clientY); }, { passive: true });
+    addEventListener('pointerdown', function (e) {
+      moved(e.clientX, e.clientY);
+      pings.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+      if (pings.length > 5) pings.shift();
+    }, { passive: true });
+    addEventListener('pointerleave', function () { pt.on = false; spot.classList.remove('on'); }, { passive: true });
+    addEventListener('blur', function () { pt.on = false; spot.classList.remove('on'); });
+  })();
+
+  /* -- surfaces catch the light where the cursor is ------------------------ */
+  (function sheen() {
+    if (reduce) return;
+    var pending = false;
+    addEventListener('pointermove', function (e) {
+      var el = e.target.closest ? e.target.closest('.card, .safe-item, .step') : null;
+      if (!el || pending) return;
+      pending = true;
+      var cx = e.clientX, cy = e.clientY;
+      requestAnimationFrame(function () {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--cx', (cx - r.left) + 'px');
+        el.style.setProperty('--cy', (cy - r.top) + 'px');
+        pending = false;
+      });
+    }, { passive: true });
   })();
 
   /* ── mobile menu ──────────────────────────────────────────────────────────── */
