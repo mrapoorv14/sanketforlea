@@ -4,15 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sanket — CDR / IPDR intelligence for Law Enforcement</title>
-<meta name="description" content="Officers send a CDR or IPDR file on WhatsApp; Sanket replies with a clear PDF report — findings first, evidence after. Runs on your own machine. Launching soon.">
+<meta name="description" content="Officers send a CDR or IPDR file on WhatsApp; Sanket replies with a clear PDF report — findings first, evidence after. Runs on your own machine.">
 <meta name="theme-color" content="#0a1728">
 <meta property="og:title" content="Sanket — Signal Intelligence">
-<meta property="og:description" content="From records to clearer leads. CDR / IPDR investigation support on WhatsApp. Launching soon.">
+<meta property="og:description" content="From records to clearer leads. CDR / IPDR investigation support on WhatsApp.">
 <meta property="og:type" content="website">
-<link rel="icon" type="image/svg+xml" href="launching-soon.svg">
+<link rel="icon" type="image/svg+xml" href="mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script>
+  var SANKET_LAUNCH = Date.parse('2026-11-06T00:00:00+05:30');   // 12:00 AM, 6 Nov 2026, IST
+  // Gate first, ask the server's clock after: a device clock up to a day fast is still caught.
+  if (Date.now() < SANKET_LAUNCH + 864e5) document.documentElement.classList.add('gated');
+</script>
 <style>
 /* ═══ Tokens — Sanket house identity, deepened for the dark canvas ═══════════════ */
 :root{
@@ -99,6 +104,8 @@ img,svg,canvas{max-width:100%; display:block}
   font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.18em; text-transform:uppercase;
   color:var(--gold-lit); white-space:nowrap;
 }
+a.pill{text-decoration:none; transition:border-color .3s var(--ease), background .3s var(--ease)}
+a.pill:hover{border-color:var(--glass-line-lit); background:rgba(198,161,91,.18)}
 .dot{width:7px; height:7px; border-radius:50%; background:var(--gold-lit); animation:pulse 2.8s var(--ease) infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,200,136,.55)}70%{box-shadow:0 0 0 10px rgba(231,200,136,0)}100%{box-shadow:0 0 0 0 rgba(231,200,136,0)}}
 .nav-toggle{display:none}
@@ -234,7 +241,9 @@ img,svg,canvas{max-width:100%; display:block}
   content:''; position:absolute; width:118%; aspect-ratio:1; border-radius:50%;
   background:radial-gradient(circle,rgba(198,161,91,.22),transparent 62%); filter:blur(26px);
 }
-.seal-wrap img{position:relative; width:clamp(190px,21vw,248px); filter:drop-shadow(0 26px 60px rgba(0,0,0,.6))}
+.seal-wrap .emblem{position:relative; width:clamp(190px,21vw,248px); height:auto; aspect-ratio:1;
+  filter:drop-shadow(0 26px 60px rgba(0,0,0,.6)); animation:spin 90s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .seal-cap{font-family:var(--mono); font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--on-dark-faint); text-align:center}
 
 .scroll-cue{position:absolute; left:50%; bottom:26px; transform:translateX(-50%); display:grid; justify-items:center; gap:10px;
@@ -504,6 +513,61 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
   .step{grid-template-columns:1fr}
   .grid-bg{background-size:48px 48px}
 }
+/* ═══ Pre-launch gate: the page sits blurred behind a countdown, then pulls into focus ═══ */
+.gate{display:none}
+html.gated{overflow:hidden}
+html.gated .gate{
+  display:grid; place-items:center; position:fixed; inset:0; z-index:200; padding:24px 16px; overflow:auto;
+  background:radial-gradient(ellipse 70% 60% at 50% 46%, rgba(6,16,29,.62), rgba(6,16,29,.4) 75%);
+  transition:opacity 15s cubic-bezier(.45,0,.25,1);
+}
+html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress{
+  filter:blur(30px) saturate(.9) brightness(.72);
+  transition:filter 15s cubic-bezier(.45,0,.25,1);
+}
+html.opening{overflow-y:auto}
+html.opening .gate{opacity:0; pointer-events:none}
+html.opening #head, html.opening #main, html.opening .site-foot, html.opening .progress{
+  filter:blur(0) saturate(1) brightness(1);
+}
+.gate-in{position:relative; text-align:center; max-width:780px}
+.gate-in > *{animation:gateUp 1.2s var(--ease-out) both}
+.gate-in > :nth-child(2){animation-delay:.1s}
+.gate-in > :nth-child(3){animation-delay:.25s}
+.gate-in > :nth-child(4){animation-delay:.4s}
+.gate-in > :nth-child(5){animation-delay:.5s}
+.gate-in > :nth-child(6){animation-delay:.6s}
+.gate-in > :nth-child(7){animation-delay:.7s}
+@keyframes gateUp{from{opacity:0; transform:translateY(22px)}to{opacity:1; transform:none}}
+.gate-t{font:600 clamp(56px,9.6vw,128px)/.96 var(--serif); letter-spacing:-.035em; margin:18px 0 0; color:#fff9eb;
+  filter:drop-shadow(0 14px 44px rgba(0,0,0,.55))}
+.gate-rule{display:block; width:min(260px,50%); height:1px; margin:26px auto 30px;
+  background:linear-gradient(90deg,transparent,var(--gold-lit),transparent); animation:rule 3.6s ease-in-out infinite}
+@keyframes rule{0%,100%{transform:scaleX(.35); opacity:.5}50%{transform:scaleX(1); opacity:1}}
+.gate-t em{
+  font-style:italic; padding-right:.08em; color:transparent; -webkit-background-clip:text; background-clip:text;
+  background-image:linear-gradient(100deg,var(--gold) 20%,var(--gold-lit) 42%,#fff3d6 50%,var(--gold-lit) 58%,var(--gold) 80%);
+  background-size:250% 100%; animation:sheen 5.5s linear infinite;
+}
+@keyframes sheen{from{background-position:100% 0}to{background-position:-150% 0}}
+.count{display:flex; justify-content:center; align-items:flex-start; gap:clamp(8px,1.6vw,18px)}
+.count > div{
+  min-width:clamp(64px,12.5vw,124px); padding:clamp(14px,1.8vw,20px) 6px clamp(12px,1.4vw,15px); overflow:hidden;
+  border:1px solid var(--glass-line); border-radius:var(--r-md); background:rgba(13,31,56,.58);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), var(--shadow);
+}
+.count b{display:block; font:400 clamp(36px,6.6vw,74px)/1 var(--serif); font-variant-numeric:tabular-nums lining-nums; color:#fff9eb}
+.count b.tick{animation:tick .6s var(--ease-out)}
+@keyframes tick{from{transform:translateY(-42%); opacity:0}to{transform:none; opacity:1}}
+.count small{display:block; margin-top:11px; font:500 10px/1 var(--mono); letter-spacing:.26em; text-transform:uppercase; color:var(--on-dark-faint)}
+.count i{align-self:center; margin-top:-22px; font:300 clamp(28px,4.6vw,54px)/1 var(--serif); font-style:normal; color:var(--gold-bright);
+  animation:colon 2s ease-in-out infinite}
+@keyframes colon{50%{opacity:.25}}
+.gate-date{margin:26px 0 0; font:500 11.5px/1.7 var(--mono); letter-spacing:.22em; text-transform:uppercase; color:var(--on-dark-dim)}
+.gate-cta{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:30px}
+.gate-note{margin:16px 0 0; font-size:13.5px; color:var(--on-dark-dim)}
+.gate-note span{font-family:var(--mono); color:var(--gold-lit)}
+@media (max-width:520px){ .count i{display:none} }
 @media (hover:none){
   #spot{display:none}
 }
@@ -519,11 +583,37 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
   #amb .orb,#amb .gridfield,#amb .trace{animation:none}
   #amb .trace{display:none}
   .card::after,.safe-item::after,.step::after{display:none}
+  html.gated .gate, html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress{transition-duration:15s !important}
 }
 @media print{.site-head,.progress,.scroll-cue,#net,.aurora{display:none}body{background:#fff; color:#000}}
 </style>
 </head>
 <body>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="gate-in">
+    <p class="label">Sanket · Signal intelligence</p>
+    <h2 class="gate-t" id="gateTitle">Launching <em>soon</em></h2>
+    <span class="gate-rule" aria-hidden="true"></span>
+    <div class="count" role="timer" aria-label="Time until launch">
+      <div><b data-u="d">00</b><small>Days</small></div><i aria-hidden="true">:</i>
+      <div><b data-u="h">00</b><small>Hours</small></div><i aria-hidden="true">:</i>
+      <div><b data-u="m">00</b><small>Minutes</small></div><i aria-hidden="true">:</i>
+      <div><b data-u="s">00</b><small>Seconds</small></div>
+    </div>
+    <p class="gate-date">Opens 6 November 2026 &middot; 12:00 AM IST</p>
+    <div class="gate-cta">
+      <a class="btn btn-gold"
+         href="mailto:mrapoorv14@gmail.com?subject=Sanket%20access%20request&amp;body=Agency%3A%0ADistrict%3A%0AOfficers%3A%0AOfficial%20email%3A%0A">
+        Request early access <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+      </a>
+      <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com" data-sel="#gateAddr">
+        <svg aria-hidden="true"><use href="#i-copy"/></svg> <span>Copy address</span>
+      </button>
+    </div>
+    <p class="gate-note">Law enforcement agencies only &mdash; write from your official email to <span id="gateAddr">mrapoorv14@gmail.com</span></p>
+  </div>
+</div>
 
 <div class="progress" id="prog" aria-hidden="true"></div>
 <div id="amb" aria-hidden="true">
@@ -626,7 +716,7 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
       <a href="#plans">Plans</a>
       <a href="#access">Access</a>
     </nav>
-    <span class="pill pill-head"><span class="dot" aria-hidden="true"></span>Launching soon</span>
+    <a class="pill pill-head" href="#access">Request access</a>
   </div>
 </header>
 
@@ -653,7 +743,7 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
         </p>
         <div class="hero-cta rv" style="--i:4">
           <a class="btn btn-gold" href="#access">
-            Request early access <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+            Request access <svg aria-hidden="true"><use href="#i-arrow"/></svg>
           </a>
           <a class="btn btn-ghost" href="#how">See how it works</a>
         </div>
@@ -667,9 +757,9 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
 
       <div class="hero-visual rv" style="--i:3">
         <figure class="seal-wrap par" data-speed="-0.06" style="margin:0">
-          <img src="launching-soon.svg" width="248" height="248" alt="Sanket seal — launching soon">
+          <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#i-mark"/></svg>
         </figure>
-        <p class="seal-cap">Onboarding the first units</p>
+        <p class="seal-cap">Built for investigating officers</p>
       </div>
     </div>
   </div>
@@ -946,7 +1036,7 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
     </div>
 
     <div style="display:flex; justify-content:center; margin-top:var(--s4)">
-      <a class="btn btn-quiet rv" href="#access">Put your unit on the first list
+      <a class="btn btn-quiet rv" href="#access">Request access for your unit
         <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
@@ -1108,15 +1198,11 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
 <section class="band-deep cta" id="access">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <figure class="seal-wrap rv" style="margin:0">
-      <img src="launching-soon.svg" width="172" height="172" alt="Sanket — launching soon"
-           style="width:clamp(136px,16vw,176px)">
-    </figure>
-    <p class="label rv" style="--i:1; justify-content:center">Before the launch</p>
-    <h2 class="rv" style="--i:2">Put your unit on the first list.</h2>
+    <p class="label rv" style="--i:1; justify-content:center">Request access</p>
+    <h2 class="rv" style="--i:2">Bring Sanket to your unit.</h2>
     <p class="lede rv" style="--i:3">Access is granted per officer by the operator. Write from your official
       email with the agency, the district and roughly how many officers would use it, and we will set your
-      numbers up as Sanket opens.</p>
+      unit up.</p>
 
     <div class="mailbox glass rv" style="--i:4">
       <div class="addr">
@@ -1128,7 +1214,7 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
            href="mailto:mrapoorv14@gmail.com?subject=Sanket%20access%20request&amp;body=Agency%3A%0ADistrict%3A%0AOfficers%3A%0AOfficial%20email%3A%0A">
           Open in mail app <svg aria-hidden="true"><use href="#i-arrow"/></svg>
         </a>
-        <button class="btn btn-ghost" id="copyBtn" type="button" data-copy="mrapoorv14@gmail.com">
+        <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com" data-sel="#addr">
           <svg aria-hidden="true"><use href="#i-copy"/></svg> <span>Copy address</span>
         </button>
       </div>
@@ -1386,6 +1472,63 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
     }, { passive: true });
   })();
 
+  /* ── pre-launch gate: count down, then a 15s pull into focus ──────────────── */
+  (function gate() {
+    var root = document.documentElement, g = $('#gate');
+    if (!root.classList.contains('gated')) { g.remove(); return; }
+    var page = [$('#head'), $('#main'), $('.site-foot')], cells = {}, timer = null;
+    var offset = 0, synced = false;                   // server clock minus device clock, ms
+    page.forEach(function (el) { el.inert = true; });
+    $$('[data-u]', g).forEach(function (b) { cells[b.dataset.u] = b; });
+
+    // The countdown runs on the web server's clock (UTC, so IST midnight is exact), read from the
+    // Date header of an uncached request. Offline, it falls back to the device clock.
+    function sync() {
+      var t0 = Date.now();
+      return fetch(location.pathname + '?clock=' + t0, { method: 'HEAD', cache: 'no-store' })
+        .then(function (r) {
+          var t1 = Date.now(), d = Date.parse(r.headers.get('Date'));
+          var age = parseInt(r.headers.get('Age'), 10) || 0;
+          if (!isNaN(d)) offset = d + age * 1000 + 500 - (t0 + t1) / 2;   // Date is whole seconds: aim mid-second
+        }, function () {})
+        .then(function () { synced = true; });
+    }
+
+    function put(u, v) {
+      var el = cells[u], t = (v < 10 ? '0' : '') + v;
+      if (el.textContent === t) return;
+      el.textContent = t;
+      if (!reduce) { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); }
+    }
+    function tick() {
+      var left = Math.max(0, SANKET_LAUNCH - (Date.now() + offset)), sec = Math.ceil(left / 1000);
+      put('d', Math.floor(sec / 86400)); put('h', Math.floor(sec % 86400 / 3600));
+      put('m', Math.floor(sec % 3600 / 60)); put('s', sec % 60);
+      if (left === 0 && synced && !document.hidden) open();   // visible tab only, so nobody misses the reveal
+    }
+    function done() { root.classList.remove('gated', 'opening'); g.remove(); }
+    function open() {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', wake);
+      page.forEach(function (el) { el.inert = false; });
+      root.classList.add('opening');
+      setTimeout(done, 15000);
+    }
+    function wake() { if (!document.hidden) sync().then(tick); }   // a sleeping device can drift
+
+    tick();
+    sync().then(function () {
+      if (Date.now() + offset >= SANKET_LAUNCH) {             // already launched: no countdown to watch
+        page.forEach(function (el) { el.inert = false; });
+        done();
+        return;
+      }
+      tick();
+      timer = setInterval(tick, 1000);
+      document.addEventListener('visibilitychange', wake);
+    });
+  })();
+
   /* ── mobile menu ──────────────────────────────────────────────────────────── */
   var btn = $('#navBtn'), nav = $('#nav');
   btn.addEventListener('click', function () {
@@ -1398,8 +1541,7 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
   });
 
   /* ── copy the address (mailto is useless without a mail client) ───────────── */
-  var copyBtn = $('#copyBtn');
-  copyBtn.addEventListener('click', function () {
+  $$('[data-copy]').forEach(function (copyBtn) { copyBtn.addEventListener('click', function () {
     var text = copyBtn.dataset.copy, label = $('span', copyBtn), done = function (ok) {
       label.textContent = ok ? 'Copied' : 'Press Ctrl+C';
       copyBtn.classList.toggle('copy-ok', ok);
@@ -1409,11 +1551,11 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
       navigator.clipboard.writeText(text).then(function () { done(true); }, function () { select(); });
     } else { select(); }
     function select() {                       // fallback: select it so Ctrl+C works
-      var r = document.createRange(); r.selectNodeContents($('#addr'));
+      var r = document.createRange(); r.selectNodeContents($(copyBtn.dataset.sel));
       var s = getSelection(); s.removeAllRanges(); s.addRange(r);
       done(false);
     }
-  });
+  }); });
 })();
 </script>
 </body>
