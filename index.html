@@ -513,31 +513,38 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
   .step{grid-template-columns:1fr}
   .grid-bg{background-size:48px 48px}
 }
-/* ═══ Pre-launch gate: the page sits blurred behind a countdown, then pulls into focus ═══ */
+/* ═══ Pre-launch gate: a frosted mirror over the live, scrollable page — only the timer is in focus ═══ */
 .gate{display:none}
-html.gated{overflow:hidden}
 html.gated .gate{
-  display:grid; place-items:center; position:fixed; inset:0; z-index:200; padding:24px 16px; overflow:auto;
-  background:radial-gradient(ellipse 70% 60% at 50% 46%, rgba(6,16,29,.62), rgba(6,16,29,.4) 75%);
-  transition:opacity 15s cubic-bezier(.45,0,.25,1);
+  display:grid; place-items:center; position:fixed; inset:0; z-index:200; padding:24px 16px; overflow:hidden; overflow:clip;  /* clip without becoming a scroller */
+  /* 75% of the 30px blur that fully hides the page: light, shape and motion come through, words do not */
+  -webkit-backdrop-filter:blur(22px) saturate(1.25) brightness(.8);
+  backdrop-filter:blur(22px) saturate(1.25) brightness(.8);
+  transition:-webkit-backdrop-filter 15s cubic-bezier(.45,0,.25,1), backdrop-filter 15s cubic-bezier(.45,0,.25,1);
 }
-html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress{
-  filter:blur(30px) saturate(.9) brightness(.72);
-  transition:filter 15s cubic-bezier(.45,0,.25,1);
-}
-html.opening{overflow-y:auto}
-html.opening .gate{opacity:0; pointer-events:none}
-html.opening #head, html.opening #main, html.opening .site-foot, html.opening .progress{
-  filter:blur(0) saturate(1) brightness(1);
-}
-.gate-in{position:relative; text-align:center; max-width:780px}
+html.gated .gate::before, html.gated .gate::after{content:''; position:absolute; pointer-events:none;
+  transition:opacity 15s cubic-bezier(.45,0,.25,1)}
+html.gated .gate::before{inset:0;                       /* the glass: a tint, a reflection, a darker centre */
+  background:
+    radial-gradient(ellipse 60% 52% at 50% 50%, rgba(6,16,29,.55), rgba(6,16,29,0) 74%),
+    linear-gradient(125deg, rgba(245,240,228,.08), rgba(245,240,228,0) 32%, rgba(245,240,228,.035) 56%, rgba(245,240,228,0) 78%),
+    rgba(10,23,40,.2);
+  box-shadow:inset 0 0 0 1px rgba(245,240,228,.06), inset 0 0 160px rgba(0,0,0,.45)}
+html.gated .gate::after{top:-20%; bottom:-20%; left:0; width:36%;   /* light sliding across the mirror */
+  background:linear-gradient(90deg, transparent, rgba(245,240,228,.075), transparent);
+  transform:translateX(-120%) skewX(-18deg); animation:mirror 12s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes mirror{0%,18%{transform:translateX(-120%) skewX(-18deg)}72%,100%{transform:translateX(340%) skewX(-18deg)}}
+html.opening .gate{pointer-events:none;
+  -webkit-backdrop-filter:blur(0) saturate(1) brightness(1); backdrop-filter:blur(0) saturate(1) brightness(1)}
+html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opacity:0}
+
+.gate-in{position:relative; z-index:1; text-align:center; max-width:820px; transition:opacity 15s cubic-bezier(.45,0,.25,1)}
 .gate-in > *{animation:gateUp 1.2s var(--ease-out) both}
 .gate-in > :nth-child(2){animation-delay:.1s}
 .gate-in > :nth-child(3){animation-delay:.25s}
 .gate-in > :nth-child(4){animation-delay:.4s}
 .gate-in > :nth-child(5){animation-delay:.5s}
 .gate-in > :nth-child(6){animation-delay:.6s}
-.gate-in > :nth-child(7){animation-delay:.7s}
 @keyframes gateUp{from{opacity:0; transform:translateY(22px)}to{opacity:1; transform:none}}
 .gate-t{font:600 clamp(56px,9.6vw,128px)/.96 var(--serif); letter-spacing:-.035em; margin:18px 0 0; color:#fff9eb;
   filter:drop-shadow(0 14px 44px rgba(0,0,0,.55))}
@@ -550,24 +557,19 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
   background-size:250% 100%; animation:sheen 5.5s linear infinite;
 }
 @keyframes sheen{from{background-position:100% 0}to{background-position:-150% 0}}
-.count{display:flex; justify-content:center; align-items:flex-start; gap:clamp(8px,1.6vw,18px)}
-.count > div{
-  min-width:clamp(64px,12.5vw,124px); padding:clamp(14px,1.8vw,20px) 6px clamp(12px,1.4vw,15px); overflow:hidden;
-  border:1px solid var(--glass-line); border-radius:var(--r-md); background:rgba(13,31,56,.58);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), var(--shadow);
-}
-.count b{display:block; font:400 clamp(36px,6.6vw,74px)/1 var(--serif); font-variant-numeric:tabular-nums lining-nums; color:#fff9eb}
-.count b.tick{animation:tick .6s var(--ease-out)}
-@keyframes tick{from{transform:translateY(-42%); opacity:0}to{transform:none; opacity:1}}
-.count small{display:block; margin-top:11px; font:500 10px/1 var(--mono); letter-spacing:.26em; text-transform:uppercase; color:var(--on-dark-faint)}
-.count i{align-self:center; margin-top:-22px; font:300 clamp(28px,4.6vw,54px)/1 var(--serif); font-style:normal; color:var(--gold-bright);
-  animation:colon 2s ease-in-out infinite}
-@keyframes colon{50%{opacity:.25}}
-.gate-date{margin:26px 0 0; font:500 11.5px/1.7 var(--mono); letter-spacing:.22em; text-transform:uppercase; color:var(--on-dark-dim)}
+
+/* the timer: one line of figures, colons between, every second lands instantly */
+.count{display:flex; justify-content:center; align-items:flex-start; font-size:clamp(40px,11vw,112px);
+  filter:drop-shadow(0 12px 40px rgba(0,0,0,.5))}
+.count > div{width:1.3em}                               /* fixed slots: changing digits never shift the row */
+.count b{display:block; font:400 1em/1 var(--serif); font-variant-numeric:tabular-nums lining-nums;
+  letter-spacing:-.02em; color:#fff9eb}
+.count i{width:.46em; font:300 1em/1 var(--serif); font-style:normal; color:var(--gold-bright);
+  position:relative; top:-.07em}
+.count small{display:block; margin-top:14px; font:500 10px/1 var(--mono); letter-spacing:.26em; text-transform:uppercase;
+  color:var(--on-dark-dim)}
+.gate-date{margin:30px 0 0; font:500 11.5px/1.7 var(--mono); letter-spacing:.22em; text-transform:uppercase; color:var(--on-dark-dim)}
 .gate-cta{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:30px}
-.gate-note{margin:16px 0 0; font-size:13.5px; color:var(--on-dark-dim)}
-.gate-note span{font-family:var(--mono); color:var(--gold-lit)}
-@media (max-width:520px){ .count i{display:none} }
 @media (hover:none){
   #spot{display:none}
 }
@@ -583,7 +585,7 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
   #amb .orb,#amb .gridfield,#amb .trace{animation:none}
   #amb .trace{display:none}
   .card::after,.safe-item::after,.step::after{display:none}
-  html.gated .gate, html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress{transition-duration:15s !important}
+  html.gated .gate, html.gated .gate::before, html.gated .gate::after, html.gated .gate-in{transition-duration:15s !important}
 }
 @media print{.site-head,.progress,.scroll-cue,#net,.aurora{display:none}body{background:#fff; color:#000}}
 </style>
@@ -605,13 +607,12 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
     <div class="gate-cta">
       <a class="btn btn-gold"
          href="mailto:mrapoorv14@gmail.com?subject=Sanket%20access%20request&amp;body=Agency%3A%0ADistrict%3A%0AOfficers%3A%0AOfficial%20email%3A%0A">
-        Request early access <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+        <svg aria-hidden="true"><use href="#i-mail"/></svg> Request access
       </a>
-      <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com" data-sel="#gateAddr">
-        <svg aria-hidden="true"><use href="#i-copy"/></svg> <span>Copy address</span>
+      <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com">
+        <svg aria-hidden="true"><use href="#i-copy"/></svg> <span>Copy email</span>
       </button>
     </div>
-    <p class="gate-note">Law enforcement agencies only &mdash; write from your official email to <span id="gateAddr">mrapoorv14@gmail.com</span></p>
   </div>
 </div>
 
@@ -1214,7 +1215,7 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
            href="mailto:mrapoorv14@gmail.com?subject=Sanket%20access%20request&amp;body=Agency%3A%0ADistrict%3A%0AOfficers%3A%0AOfficial%20email%3A%0A">
           Open in mail app <svg aria-hidden="true"><use href="#i-arrow"/></svg>
         </a>
-        <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com" data-sel="#addr">
+        <button class="btn btn-ghost" type="button" data-copy="mrapoorv14@gmail.com">
           <svg aria-hidden="true"><use href="#i-copy"/></svg> <span>Copy address</span>
         </button>
       </div>
@@ -1494,12 +1495,7 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
         .then(function () { synced = true; });
     }
 
-    function put(u, v) {
-      var el = cells[u], t = (v < 10 ? '0' : '') + v;
-      if (el.textContent === t) return;
-      el.textContent = t;
-      if (!reduce) { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); }
-    }
+    function put(u, v) { cells[u].textContent = (v < 10 ? '0' : '') + v; }
     function tick() {
       var left = Math.max(0, SANKET_LAUNCH - (Date.now() + offset)), sec = Math.ceil(left / 1000);
       put('d', Math.floor(sec / 86400)); put('h', Math.floor(sec % 86400 / 3600));
@@ -1540,22 +1536,29 @@ html.opening #head, html.opening #main, html.opening .site-foot, html.opening .p
     if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
   });
 
-  /* ── copy the address (mailto is useless without a mail client) ───────────── */
-  $$('[data-copy]').forEach(function (copyBtn) { copyBtn.addEventListener('click', function () {
-    var text = copyBtn.dataset.copy, label = $('span', copyBtn), done = function (ok) {
-      label.textContent = ok ? 'Copied' : 'Press Ctrl+C';
-      copyBtn.classList.toggle('copy-ok', ok);
-      setTimeout(function () { label.textContent = 'Copy address'; copyBtn.classList.remove('copy-ok'); }, 2200);
-    };
-    if (navigator.clipboard && isSecureContext) {
-      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { select(); });
-    } else { select(); }
-    function select() {                       // fallback: select it so Ctrl+C works
-      var r = document.createRange(); r.selectNodeContents($(copyBtn.dataset.sel));
-      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
-      done(false);
-    }
-  }); });
+  /* ── copy the email (mailto is useless without a mail client) ─────────────── */
+  $$('[data-copy]').forEach(function (copyBtn) {
+    var label = $('span', copyBtn), idle = label.textContent;
+    copyBtn.addEventListener('click', function () {
+      var text = copyBtn.dataset.copy, done = function (ok) {
+        label.textContent = ok ? 'Copied' : 'Copy failed';
+        copyBtn.classList.toggle('copy-ok', ok);
+        setTimeout(function () { label.textContent = idle; copyBtn.classList.remove('copy-ok'); }, 2200);
+      };
+      if (navigator.clipboard && isSecureContext) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(legacyCopy(text)); });
+      } else { done(legacyCopy(text)); }
+    });
+  });
+  function legacyCopy(text) {                 // no async clipboard (older browsers): copy via a throwaway field
+    var ta = document.createElement('textarea'), ok = false;
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed; top:0; left:0; opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok;
+  }
 })();
 </script>
 </body>
