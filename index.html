@@ -162,6 +162,46 @@ img,svg,canvas{max-width:100%; display:block}
   background:radial-gradient(circle closest-side, rgba(198,161,91,.15), transparent 70%);
 }
 #spot.on{opacity:1}
+/* one ambient layer for the whole page: drifting light, a breathing grid and
+   signal traces running down it. Transform/opacity only, so it composites. */
+#amb{position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden}
+#amb .orb{position:absolute; border-radius:50%}
+#amb .orb:nth-child(1){width:760px; height:680px; left:-14%; top:-12%;
+  background:radial-gradient(circle,rgba(198,161,91,.26) 0%,rgba(198,161,91,.1) 42%,transparent 72%); animation:orbDrift 34s ease-in-out infinite}
+#amb .orb:nth-child(2){width:820px; height:720px; right:-16%; top:14%;
+  background:radial-gradient(circle,rgba(62,106,168,.3) 0%,rgba(62,106,168,.12) 44%,transparent 74%); animation:orbDrift 46s ease-in-out infinite reverse}
+#amb .orb:nth-child(3){width:680px; height:600px; left:26%; bottom:-20%;
+  background:radial-gradient(circle,rgba(161,124,58,.22) 0%,rgba(161,124,58,.09) 44%,transparent 76%); animation:orbDrift 40s ease-in-out infinite}
+#amb .gridfield{
+  position:absolute; inset:-80px 0 -80px 0; opacity:.34; will-change:transform;
+  background-image:linear-gradient(rgba(127,166,217,.08) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(127,166,217,.08) 1px,transparent 1px);
+  background-size:76px 76px;
+  animation:gridDrift 26s linear infinite;
+}
+#amb .fade{position:absolute; inset:0;
+  background:radial-gradient(ellipse 88% 72% at 50% 45%, transparent 28%, rgba(6,16,29,.92) 86%)}
+#amb .trace{
+  position:absolute; top:0; width:1px; height:26vh; will-change:transform;
+  background:linear-gradient(180deg,transparent,rgba(198,161,91,.5) 45%,rgba(231,200,136,.75) 60%,transparent);
+  animation:traceRun 15s linear infinite;
+}
+#amb .trace:nth-of-type(1){left:11%; animation-duration:17s}
+#amb .trace:nth-of-type(2){left:37%; animation-duration:23s; animation-delay:-6s; opacity:.7}
+#amb .trace:nth-of-type(3){left:68%; animation-duration:19s; animation-delay:-11s}
+#amb .trace:nth-of-type(4){left:88%; animation-duration:27s; animation-delay:-3s; opacity:.6}
+@keyframes orbDrift{
+  0%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(60px,-46px,0)}
+  100%{transform:translate3d(-30px,28px,0)}
+}
+@keyframes gridDrift{to{transform:translate3d(0,-76px,0)}}
+@keyframes traceRun{
+  0%{transform:translateY(-130%); opacity:0}
+  10%{opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(430%); opacity:0}
+}
 #grain{
   position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.035;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
@@ -170,8 +210,8 @@ img,svg,canvas{max-width:100%; display:block}
   background:radial-gradient(ellipse 80% 70% at 50% 45%,transparent 40%,rgba(6,16,29,.75) 100%)}
 
 /* ═══ Hero ═══════════════════════════════════════════════════════════════════════ */
-.hero{position:relative; min-height:100svh; display:flex; align-items:center; overflow:hidden;
-  padding:112px 0 72px}
+.hero{position:relative; min-height:92svh; display:flex; align-items:center; overflow:hidden;
+  padding:104px 0 56px}
 .hero-grid{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:var(--s5); align-items:center}
 .hero h1{margin:20px 0 24px; font-size:clamp(42px,6.2vw,82px); line-height:1.02; font-weight:300; letter-spacing:-.03em}
 .hero h1 span{display:block; overflow:hidden}
@@ -204,12 +244,12 @@ img,svg,canvas{max-width:100%; display:block}
 @keyframes cue{0%{transform:scaleY(.25); transform-origin:0 0; opacity:0}40%{transform:scaleY(1); opacity:1}100%{transform:scaleY(.25); transform-origin:0 100%; opacity:0}}
 
 /* ═══ Sections ═══════════════════════════════════════════════════════════════════ */
-section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
+section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
 .band{background:radial-gradient(1100px 620px at 50% 0%, rgba(26,55,99,.34), transparent 72%)}
 .band-deep{background:radial-gradient(900px 560px at 50% 100%, rgba(13,31,56,.42), transparent 74%)}
-.band::after,.band-deep::after{content:''; position:absolute; inset:auto 0 0 0; height:1px; pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(198,161,91,.3),transparent)}
-.sec-head{max-width:72ch; margin-bottom:var(--s5)}
+.band::after,.band-deep::after{content:''; position:absolute; inset:auto 0 -1px 0; height:140px; pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(6,16,29,.5))}
+.sec-head{max-width:72ch; margin-bottom:var(--s4)}
 .sec-head h2{margin:18px 0 18px; font-size:clamp(32px,4.4vw,54px); line-height:1.08; font-weight:300; letter-spacing:-.025em}
 .sec-head h2 em{font-style:normal; color:var(--gold-lit)}
 .sec-head .lede{max-width:64ch}
@@ -280,7 +320,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   color:var(--on-dark-faint); text-align:center; text-transform:uppercase}
 
 /* command chips */
-.chips{display:flex; flex-wrap:wrap; gap:10px; margin:var(--s5) 0 0; padding:0; list-style:none}
+.chips{display:flex; flex-wrap:wrap; gap:10px; margin:var(--s4) 0 0; padding:0; list-style:none}
 .chip{
   display:inline-flex; align-items:center; min-height:40px; padding:0 15px; border-radius:999px;
   border:1px solid var(--glass-line); background:rgba(10,23,40,.5);
@@ -441,7 +481,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 @media (max-width:1040px){
   .hero-grid,.flow,.anatomy,.split{grid-template-columns:1fr; gap:var(--s4)}
   .cards,.plans,.safe,.stat-row{grid-template-columns:repeat(2,1fr)}
-  .hero{min-height:auto; padding:104px 0 64px}
+  .hero{min-height:auto; padding:96px 0 56px}
   .scroll-cue{display:none}
   .nav{display:none}
   .nav.open{display:grid; position:absolute; left:16px; right:16px; top:72px; padding:10px;
@@ -476,6 +516,8 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
   .bars i,.sheet .bar i{transform:scaleY(1) scaleX(1)}
   .par{transform:none !important}
   #net,#spot{display:none}
+  #amb .orb,#amb .gridfield,#amb .trace{animation:none}
+  #amb .trace{display:none}
   .card::after,.safe-item::after,.step::after{display:none}
 }
 @media print{.site-head,.progress,.scroll-cue,#net,.aurora{display:none}body{background:#fff; color:#000}}
@@ -484,6 +526,12 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 <body>
 
 <div class="progress" id="prog" aria-hidden="true"></div>
+<div id="amb" aria-hidden="true">
+  <i class="orb"></i><i class="orb"></i><i class="orb"></i>
+  <div class="gridfield"></div>
+  <div class="fade"></div>
+  <span class="trace"></span><span class="trace"></span><span class="trace"></span><span class="trace"></span>
+</div>
 <canvas id="net" aria-hidden="true"></canvas>
 <div id="spot" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
@@ -587,7 +635,6 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 
 <!-- ═══ HERO ═══════════════════════════════════════════════════════════════════ -->
 <section class="hero">
-  <div class="aurora par" data-speed="0.12" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="grid-bg par" data-speed="0.05" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
 
@@ -662,7 +709,6 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 
 <!-- ═══ CHAPTER 2 — THE FLOW ═══════════════════════════════════════════════════ -->
 <section class="band-deep" id="how">
-  <div class="aurora par" data-speed="0.07" aria-hidden="true" style="opacity:.4"><i></i><i></i></div>
   <div class="wrap">
     <div class="sec-head rv">
       <p class="label">Chapter 02 — the flow</p>
@@ -899,7 +945,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
       </ul>
     </div>
 
-    <div style="display:flex; justify-content:center; margin-top:var(--s5)">
+    <div style="display:flex; justify-content:center; margin-top:var(--s4)">
       <a class="btn btn-quiet rv" href="#access">Put your unit on the first list
         <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
@@ -1060,7 +1106,6 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 
 <!-- ═══ ACCESS ═════════════════════════════════════════════════════════════════ -->
 <section class="band-deep cta" id="access">
-  <div class="aurora par" data-speed="0.1" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
     <figure class="seal-wrap rv" style="margin:0">
@@ -1204,7 +1249,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
       w = innerWidth; h = innerHeight;
       cv.width = w * dpr; cv.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var want = Math.round(Math.min(58, Math.max(22, (w * h) / 32000)));
+      var want = Math.round(Math.min(70, Math.max(26, (w * h) / 27000)));
       while (nodes.length > want) nodes.pop();
       while (nodes.length < want) nodes.push(spawn());
     }
@@ -1214,9 +1259,12 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
 
       for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i];
-        n.x += n.vx; n.y += n.vy;
+        n.x += n.vx + Math.sin((t / 7000) + n.ph) * .07;
+        n.y += n.vy + Math.cos((t / 9000) + n.ph) * .05;
         if (n.x < 0 || n.x > w) n.vx *= -1;
         if (n.y < 0 || n.y > h) n.vy *= -1;
+        n.x = Math.max(-20, Math.min(w + 20, n.x));
+        n.y = Math.max(-20, Math.min(h + 20, n.y));
 
         // a slow lean toward the cursor, never a lunge
         if (pt.on) {
@@ -1233,7 +1281,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
         for (var j = i + 1; j < nodes.length; j++) {
           var m = nodes[j], dx = n.x - m.x, dy = n.y - m.y, d2 = dx * dx + dy * dy;
           if (d2 < LINK2) {
-            ctx.strokeStyle = 'rgba(127,166,217,' + ((1 - d2 / LINK2) * .26).toFixed(3) + ')';
+            ctx.strokeStyle = 'rgba(127,166,217,' + ((1 - d2 / LINK2) * .34).toFixed(3) + ')';
             ctx.lineWidth = .7;
             ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
           }
@@ -1275,7 +1323,7 @@ section{position:relative; overflow:hidden; padding:clamp(72px,9vw,var(--s7)) 0}
         ctx.arc(o.x, o.y, o.r + hot * 1.5, 0, Math.PI * 2);
         ctx.fillStyle = (o.lit || o.flash > .02)
           ? 'rgba(231,200,136,' + (.4 + hot * .55).toFixed(3) + ')'
-          : 'rgba(159,179,204,.38)';
+          : 'rgba(159,179,204,.5)';
         ctx.fill();
         if (hot > .02) {
           ctx.beginPath();
