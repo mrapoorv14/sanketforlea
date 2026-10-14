@@ -515,16 +515,21 @@ section{position:relative; overflow:hidden; padding:clamp(56px,5.6vw,88px) 0}
 }
 /* ═══ Pre-launch gate: a frosted mirror over the live, scrollable page — only the timer is in focus ═══ */
 .gate{display:none}
-html.gated .gate{
-  display:grid; place-items:center; position:fixed; inset:0; z-index:200; padding:24px 16px; overflow:hidden; overflow:clip;  /* clip without becoming a scroller */
-  /* 75% of the 30px blur that fully hides the page: light, shape and motion come through, words do not */
-  -webkit-backdrop-filter:blur(22px) saturate(1.25) brightness(.8);
-  backdrop-filter:blur(22px) saturate(1.25) brightness(.8);
-  transition:-webkit-backdrop-filter 15s cubic-bezier(.45,0,.25,1), backdrop-filter 15s cubic-bezier(.45,0,.25,1);
+html.gated .gate{display:grid; place-items:center; position:fixed; inset:0; z-index:200; padding:24px 16px}
+/* 75% of the 30px blur that fully hides the page: light, shape and motion come through, words do not.
+   It is applied to the page itself, so no scroll frame can ever show it sharp. */
+html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress, html.gated #net, html.gated #amb{
+  filter:blur(22px) saturate(1.25) brightness(.8);
+  transition:filter 15s cubic-bezier(.45,0,.25,1);
+}
+html.opening #head, html.opening #main, html.opening .site-foot, html.opening .progress, html.opening #net, html.opening #amb{
+  filter:blur(0) saturate(1) brightness(1);
 }
 html.gated .gate::before, html.gated .gate::after{content:''; position:absolute; pointer-events:none;
   transition:opacity 15s cubic-bezier(.45,0,.25,1)}
-html.gated .gate::before{inset:0;                       /* the glass: a tint, a reflection, a darker centre */
+/* the mirror on top: tint, reflection, a darker centre. Overhangs the viewport so a mobile
+   toolbar sliding away never leaves an uncovered strip. */
+html.gated .gate::before{inset:-12vh 0;
   background:
     radial-gradient(ellipse 60% 52% at 50% 50%, rgba(6,16,29,.55), rgba(6,16,29,0) 74%),
     linear-gradient(125deg, rgba(245,240,228,.08), rgba(245,240,228,0) 32%, rgba(245,240,228,.035) 56%, rgba(245,240,228,0) 78%),
@@ -534,11 +539,11 @@ html.gated .gate::after{top:-20%; bottom:-20%; left:0; width:36%;   /* light sli
   background:linear-gradient(90deg, transparent, rgba(245,240,228,.075), transparent);
   transform:translateX(-120%) skewX(-18deg); animation:mirror 12s cubic-bezier(.45,0,.25,1) infinite}
 @keyframes mirror{0%,18%{transform:translateX(-120%) skewX(-18deg)}72%,100%{transform:translateX(340%) skewX(-18deg)}}
-html.opening .gate{pointer-events:none;
-  -webkit-backdrop-filter:blur(0) saturate(1) brightness(1); backdrop-filter:blur(0) saturate(1) brightness(1)}
+html.opening .gate{pointer-events:none}
 html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opacity:0}
 
-.gate-in{position:relative; z-index:1; text-align:center; max-width:820px; transition:opacity 15s cubic-bezier(.45,0,.25,1)}
+.gate-in{position:relative; z-index:1; text-align:center; max-width:820px; will-change:transform;
+  transition:opacity 15s cubic-bezier(.45,0,.25,1)}
 .gate-in > *{animation:gateUp 1.2s var(--ease-out) both}
 .gate-in > :nth-child(2){animation-delay:.1s}
 .gate-in > :nth-child(3){animation-delay:.25s}
@@ -547,20 +552,19 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
 .gate-in > :nth-child(6){animation-delay:.6s}
 @keyframes gateUp{from{opacity:0; transform:translateY(22px)}to{opacity:1; transform:none}}
 .gate-t{font:600 clamp(56px,9.6vw,128px)/.96 var(--serif); letter-spacing:-.035em; margin:18px 0 0; color:#fff9eb;
-  filter:drop-shadow(0 14px 44px rgba(0,0,0,.55))}
+  text-shadow:0 14px 44px rgba(0,0,0,.5)}
 .gate-rule{display:block; width:min(260px,50%); height:1px; margin:26px auto 30px;
   background:linear-gradient(90deg,transparent,var(--gold-lit),transparent); animation:rule 3.6s ease-in-out infinite}
 @keyframes rule{0%,100%{transform:scaleX(.35); opacity:.5}50%{transform:scaleX(1); opacity:1}}
 .gate-t em{
   font-style:italic; padding-right:.08em; color:transparent; -webkit-background-clip:text; background-clip:text;
   background-image:linear-gradient(100deg,var(--gold) 20%,var(--gold-lit) 42%,#fff3d6 50%,var(--gold-lit) 58%,var(--gold) 80%);
-  background-size:250% 100%; animation:sheen 5.5s linear infinite;
+  background-size:250% 100%; background-position:40% 0; text-shadow:none;
 }
-@keyframes sheen{from{background-position:100% 0}to{background-position:-150% 0}}
 
 /* the timer: one line of figures, colons between, every second lands instantly */
 .count{display:flex; justify-content:center; align-items:flex-start; font-size:clamp(40px,11vw,112px);
-  filter:drop-shadow(0 12px 40px rgba(0,0,0,.5))}
+  text-shadow:0 12px 40px rgba(0,0,0,.5)}
 .count > div{width:1.3em}                               /* fixed slots: changing digits never shift the row */
 .count b{display:block; font:400 1em/1 var(--serif); font-variant-numeric:tabular-nums lining-nums;
   letter-spacing:-.02em; color:#fff9eb}
@@ -585,7 +589,8 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
   #amb .orb,#amb .gridfield,#amb .trace{animation:none}
   #amb .trace{display:none}
   .card::after,.safe-item::after,.step::after{display:none}
-  html.gated .gate, html.gated .gate::before, html.gated .gate::after, html.gated .gate-in{transition-duration:15s !important}
+  html.gated .gate::before, html.gated .gate::after, html.gated .gate-in,
+  html.gated #head, html.gated #main, html.gated .site-foot, html.gated .progress, html.gated #amb{transition-duration:15s !important}
 }
 @media print{.site-head,.progress,.scroll-cue,#net,.aurora{display:none}body{background:#fff; color:#000}}
 </style>
@@ -1477,7 +1482,7 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
   (function gate() {
     var root = document.documentElement, g = $('#gate');
     if (!root.classList.contains('gated')) { g.remove(); return; }
-    var page = [$('#head'), $('#main'), $('.site-foot')], cells = {}, timer = null;
+    var page = [$('body > a.sr'), $('#head'), $('#main'), $('.site-foot')].filter(Boolean), cells = {}, timer = null;
     var offset = 0, synced = false;                   // server clock minus device clock, ms
     page.forEach(function (el) { el.inert = true; });
     $$('[data-u]', g).forEach(function (b) { cells[b.dataset.u] = b; });
