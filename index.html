@@ -1484,15 +1484,17 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
     $$('[data-u]', g).forEach(function (b) { cells[b.dataset.u] = b; });
 
     // The countdown runs on the web server's clock (UTC, so IST midnight is exact), read from the
-    // Date header of an uncached request. Offline, it falls back to the device clock.
+    // Date header of an uncached request. Offline, or if the server takes over 4s to answer, it
+    // falls back to the device clock rather than holding the page behind the gate.
     function sync() {
       var t0 = Date.now();
-      return fetch(location.pathname + '?clock=' + t0, { method: 'HEAD', cache: 'no-store' })
+      var ask = fetch(location.pathname + '?clock=' + t0, { method: 'HEAD', cache: 'no-store' })
         .then(function (r) {
           var t1 = Date.now(), d = Date.parse(r.headers.get('Date'));
           var age = parseInt(r.headers.get('Age'), 10) || 0;
           if (!isNaN(d)) offset = d + age * 1000 + 500 - (t0 + t1) / 2;   // Date is whole seconds: aim mid-second
-        }, function () {})
+        }, function () {});
+      return Promise.race([ask, new Promise(function (r) { setTimeout(r, 4000); })])
         .then(function () { synced = true; });
     }
 
