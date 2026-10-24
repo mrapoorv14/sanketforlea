@@ -1056,9 +1056,9 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
       </div>
       <div class="safe-item glass rv" style="--i:1">
         <span class="ico"><svg aria-hidden="true"><use href="#i-lock"/></svg></span>
-        <div><b>The panel is localhost-only</b>
-          <p>It answers on 127.0.0.1 and nowhere else. The password is hashed with scrypt, and five wrong
-            attempts lock sign-in for fifteen minutes.</p></div>
+        <div><b>The panel never leaves the machine</b>
+          <p>It answers only on the machine Sanket runs on — not on the network, not on the internet.
+            Sign-in is password-protected and locks itself after repeated failed attempts.</p></div>
       </div>
       <div class="safe-item glass rv" style="--i:2">
         <span class="ico"><svg aria-hidden="true"><use href="#i-id"/></svg></span>
@@ -1116,7 +1116,7 @@ html.opening .gate::before, html.opening .gate::after, html.opening .gate-in{opa
         </ul>
       </div>
       <div class="panel-mock glass rv par" data-speed="-0.05">
-        <div class="panel-bar"><i></i><i></i><i></i><span>127.0.0.1:3200 — Sanket panel</span></div>
+        <div class="panel-bar"><i></i><i></i><i></i><span>Sanket panel</span></div>
         <div class="panel-body">
           <div class="panel-side" aria-hidden="true">
             <b>Police officers</b>
